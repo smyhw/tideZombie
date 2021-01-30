@@ -63,11 +63,7 @@ public class DoMob extends BukkitRunnable {
 				{
 					continue;
 				}
-				Creature creature = Helper.spawnMob(spawnLoc);
-				//如果返回了生成的实例，设置目标
-				if(creature != null) {
-					creature.setTarget(p);
-				}
+				Creature creature = Helper.spawnMob(spawnLoc,p);
 			}
 		}
 	}

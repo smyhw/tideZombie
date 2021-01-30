@@ -55,7 +55,7 @@ public class Tz extends JavaPlugin implements Listener {
 	@EventHandler
 	public void CreatureSpawnEvent(PlayerJoinEvent e) {
 		//是否在第一个玩家进服时启动
-		if(TaskThread != null && configer.getBoolean("on_enable", false) && firstPlayer) {
+		if(TaskThread !=null && configer.getBoolean("on_enable", false) && firstPlayer) {
 			TaskThread = new DoMob(thisPlugin);
 			firstPlayer = false;
 		}

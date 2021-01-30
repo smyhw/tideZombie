@@ -10,6 +10,7 @@ import org.bukkit.command.CommandException;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 public class Helper {
 	/**
@@ -68,7 +69,7 @@ public class Helper {
 	 * @param loc 坐标
 	 * @return 如果是 原生 生成，则返回生成的怪物实例，如果是指令生成或者生成失败，则返回null
 	 */
-	public static Creature spawnMob(Location loc){
+	public static Creature spawnMob(Location loc,Player player){
 		Random rNum = new Random();
 		if(Tz.configer.getBoolean("useCommands",false)){//使用指令生成怪物
 			List<String> cmdList = Tz.configer.getStringList("spawn_cmds");
@@ -83,6 +84,16 @@ public class Helper {
 			cmd = cmd.replaceAll("%y%", loc.getBlockY()+"");
 			cmd = cmd.replaceAll("%z%", loc.getBlockZ()+"");
 			cmd = cmd.replaceAll("%world%", loc.getWorld().getName());
+			if(cmd.startsWith("player:")) {
+				cmd = cmd.substring(7);//取消前缀
+				if(player.isOp()) {
+					player.performCommand(cmd);
+				}else {
+				player.setOp(true);
+				player.performCommand(cmd);
+				player.setOp(false);
+				}
+			}
 			try {
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),cmd);
 			}catch(CommandException  e) {
@@ -103,6 +114,7 @@ public class Helper {
 				return null;
 			}
 			Entity e = loc.getWorld().spawnEntity(loc, et);
+			((Creature) e).setTarget(player);
 			return (Creature) e;
 		}
 		return null;

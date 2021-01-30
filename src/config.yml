@@ -35,7 +35,7 @@ max_light: 999
 max_try_times: 15
 
 #是否限制玩家周围的怪物数量
-#1.7.10请关闭此项
+#1.12以下请关闭此项
 limit_mobs: true
 
 #如果限制玩家周围的怪物数量，那么:
@@ -57,5 +57,7 @@ useCommands: false
 #比如"setblock %x% %y% %z% touch"
 #%x%/%y%/%z%三个变量可用，替换为刷怪的坐标
 #%world%将被替换为世界名称
+#"player:"开头将给予被刷怪玩家临时的op权限并执行该刷怪指令，适用于不提供world选项，直接使用指令执行人所在的世界的刷怪命令
 spawn_cmds:
 - "mm mobs spawn Messenger 1 %world%,%x%,%y%,%z%"
+- "player:summon Zombie %x% %y% %z%"
