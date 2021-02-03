@@ -72,10 +72,6 @@ public class Tz extends JavaPlugin implements Listener {
 		}
 		switch(args[0]) {
 			case "start":
-				if(TaskThread != null) { //如果本来就有尸潮在运行，先把它停了
-					sender.sendMessage("§b[§ctideZombie§b]§r:尸潮已经处于启动状态，将在停止后启动新尸潮...");
-					TaskThread.tzCancel();
-				}
 				if(args.length < 2) { //参数不满2个
 					TaskThread = new DoMob(thisPlugin);
 					sender.sendMessage("§b[§ctideZombie§b]§r:启动持续性尸潮...");

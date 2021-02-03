@@ -21,7 +21,7 @@ public class OnNightStart extends BukkitRunnable {
 			Tz.loger.warning("用来确定时间的世界<"+Tz.configer.getString("on_night_world", "没有找到on_night_world配置项")+">不存在");
 			this.cancel();
 		}
-		if(wd.getFullTime()>14000 && wd.getFullTime()< 14030 && Tz.TaskThread!=null){
+		if(wd.getFullTime()>14000 && wd.getFullTime()< 14030 && Tz.TaskThread==null){
 			Tz.loger.info("夜晚自动开启尸潮");
 			Tz.TaskThread = new DoMob(Tz.thisPlugin,10000);
 		}

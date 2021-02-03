@@ -4,7 +4,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +21,11 @@ public class DoMob extends BukkitRunnable {
 	private stop_this_thread cancelThread;//关闭这个尸潮的计时task(如果有)
 
 	public DoMob(JavaPlugin plugin) {
+		//先检查有没有已经在运行的尸潮
+		if(Tz.TaskThread  != null) {
+			Tz.loger.info("§b[§ctideZombie§b]§r:尸潮已经处于启动状态，将在停止后启动新尸潮...");
+			Tz.TaskThread.tzCancel();
+		}
 		this.plugin = plugin;
 		List < String > WorldNameStringList = Tz.configer.getStringList("enable_worlds");
 		for(String name: WorldNameStringList) {
@@ -63,7 +67,7 @@ public class DoMob extends BukkitRunnable {
 				{
 					continue;
 				}
-				Creature creature = Helper.spawnMob(spawnLoc,p);
+				Helper.spawnMob(spawnLoc,p);
 			}
 		}
 	}
