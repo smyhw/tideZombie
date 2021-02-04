@@ -32,7 +32,7 @@ class OnFirstPlayerLoginListerner implements Listener{
 	public void OnPlayerJoinEvent(PlayerJoinEvent e) {
 		//是否在第一个玩家进服时启动
 		if(Tz.TaskThread ==null && firstPlayer && enable) {
-			Tz.TaskThread = new DoMob(Tz.thisPlugin);
+			new DoMob(Tz.thisPlugin);
 			firstPlayer = false;
 		}
 	}

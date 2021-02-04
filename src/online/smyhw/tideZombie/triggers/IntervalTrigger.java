@@ -8,8 +8,8 @@ import online.smyhw.tideZombie.Tz;
 public class IntervalTrigger implements StandardTrigger {
 	IntervalTriggerTask task;
 	public IntervalTrigger() {
-		int interval = Tz.configer.getInt("triggers.OnTimeIntervalTrigger.intervalTime",12000);
-		int duration = Tz.configer.getInt("triggers.OnTimeIntervalTrigger.duration",1200);
+		int interval = Tz.configer.getInt("triggers.IntervalTrigger.intervalTime",12000);
+		int duration = Tz.configer.getInt("triggers.IntervalTrigger.duration",1200);
 		task = new IntervalTriggerTask(interval,duration);
 	}
 	@Override
@@ -31,7 +31,7 @@ class IntervalTriggerTask extends BukkitRunnable{
 	}
 	public void run() {
 		if(Tz.TaskThread==null) {
-			Tz.TaskThread = new DoMob(Tz.thisPlugin,time);
+			new DoMob(Tz.thisPlugin,time);
 		}
 	}
 }

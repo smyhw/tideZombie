@@ -59,12 +59,14 @@ triggers:
   OnNightStartTrigger:
     #是否启动这个触发器
     enable: true
-    #以哪个世界的时间来
+    #以哪个世界的时间为准
     on_night_world: world
+    #如果夜晚来临时已经有尸潮在运行，是否结束这个尸潮并创建这个夜晚定时尸潮
+    force: false
 
   #每间隔一段时间，开启定时尸潮
   IntervalTrigger:
-    enable: true
+    enable: false
     #间隔多长时间(单位:tick)
     intervalTime: 12000
     #持续时间(设置为-1则为持续性尸潮)

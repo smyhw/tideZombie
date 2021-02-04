@@ -37,6 +37,7 @@ public class DoMob extends BukkitRunnable {
 			WorldList.add(tmp1);
 		}
 		this.runTaskTimer(this.plugin, 0, Tz.configer.getInt("spawn_ticks", 10));
+		Tz.TaskThread = this;
 		Bukkit.broadcastMessage("§b[§ctideZombie§b]§r:尸潮已经开始...");
 	}
 	public DoMob(JavaPlugin plugin, int time) {

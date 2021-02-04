@@ -31,16 +31,21 @@ class OnNightStartTriggerTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		World wd = Bukkit.getWorld(Tz.configer.getString("on_night_world", "world"));
+		World wd = Bukkit.getWorld(Tz.configer.getString("triggers.OnNightStartTrigger.on_night_world", "world"));
 		if(wd==null) {
-			Tz.loger.warning("用来确定时间的世界<"+Tz.configer.getString("on_night_world", "没有找到on_night_world配置项")+">不存在");
+			Tz.loger.warning("用来确定时间的世界<"+Tz.configer.getString("triggers.OnNightStartTrigger.on_night_world", "没有找到on_night_world配置项")+">不存在");
 			this.cancel();
 		}
-		if(wd.getFullTime()>14000 && wd.getFullTime()< 14030){
+		System.out.println(wd.getFullTime());
+		long time = wd.getFullTime();
+		if(time>24000) {//1.7.10以下，时间戳不会每天重置，而是一直向上叠加
+			time = time%24000;
+		}
+		if(time>14000 && time< 14030){
 			//如果没有开启强制覆盖，并且已经有尸潮在运行，则不创建新的尸潮
 			if(Tz.configer.getBoolean("triggers.OnNightStartTrigger.force", false) &&  Tz.TaskThread!=null ) {return;}
 			Tz.loger.info("夜晚自动开启尸潮");
-			Tz.TaskThread = new DoMob(Tz.thisPlugin,10000);
+			new DoMob(Tz.thisPlugin,10000);
 		}
 		
 	}

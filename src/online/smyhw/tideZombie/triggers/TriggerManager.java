@@ -9,7 +9,7 @@ import java.util.Set;
 import online.smyhw.tideZombie.Tz;
 
 public class TriggerManager {
-	public static Map<String,StandardTrigger> triggerList = new HashMap<String,StandardTrigger>();
+	public static Map<String,StandardTrigger> triggerList;
 	
 	/**
 	 * 初始化所有启用的触发器<br>
@@ -17,6 +17,7 @@ public class TriggerManager {
 	 */
 	public static void enable() {
 		List<String> triggerNameList = Helper.getTriggerNameList();
+		triggerList = new HashMap<String,StandardTrigger>();
 		for(String triggerName:triggerNameList) {
 			//反射实例化触发器
 			try {

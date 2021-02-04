@@ -53,7 +53,7 @@ public class Tz extends JavaPlugin implements Listener {
 		switch(args[0]) {
 			case "start":
 				if(args.length < 2) { //参数不满2个
-					TaskThread = new DoMob(thisPlugin);
+					new DoMob(thisPlugin);
 					sender.sendMessage("§b[§ctideZombie§b]§r:启动持续性尸潮...");
 				} else {
 					int time;
@@ -63,7 +63,7 @@ public class Tz extends JavaPlugin implements Listener {
 						sender.sendMessage("§b[§ctideZombie§b]§r:无法解析你输入的持续时间");
 						return true;
 					}
-					TaskThread = new DoMob(thisPlugin, time);
+					new DoMob(thisPlugin, time);
 					sender.sendMessage("§b[§ctideZombie§b]§r:启动定时尸潮,持续" + time + "ticks...");
 				}
 				return true;
@@ -79,6 +79,10 @@ public class Tz extends JavaPlugin implements Listener {
 				sender.sendMessage("§b[§ctideZombie§b]§r:重载配置文件...");
 				this.reloadConfig();
 				configer = getConfig();
+				sender.sendMessage("§b[§ctideZombie§b]§r:重载触发器...");
+				TriggerManager.disable();
+				TriggerManager.enable();
+				sender.sendMessage("§b[§ctideZombie§b]§r:重载完成...");
 				return true;
 			case "help":
 			default:
