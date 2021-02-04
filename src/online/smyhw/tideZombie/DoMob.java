@@ -41,7 +41,9 @@ public class DoMob extends BukkitRunnable {
 	}
 	public DoMob(JavaPlugin plugin, int time) {
 		this(plugin);
-		new stop_this_thread(plugin,this,time);
+		if(time>0) {
+			cancelThread = new stop_this_thread(plugin,this,time);
+		}
 	}
 
 	@Override

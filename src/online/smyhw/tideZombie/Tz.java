@@ -1,11 +1,11 @@
 package online.smyhw.tideZombie;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import online.smyhw.tideZombie.triggers.TriggerManager;
+
 import java.util.logging.Logger;
-import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -16,26 +16,18 @@ public class Tz extends JavaPlugin implements Listener {
 	public static FileConfiguration configer;
 	//存储尸潮线程
 	public static DoMob TaskThread;
-	//存储夜晚定时线程
-	public static OnNightStart OnNightTask;
 
 	@Override
 	public void onEnable() {
 		getLogger().info("tideZombie加载中...");
-		firstPlayer = true;
 		getLogger().info("正在加载环境...");
 		loger = getLogger();
 		configer = getConfig();
 		thisPlugin = this;
 		getLogger().info("正在加载配置...");
 		saveDefaultConfig();
-		getLogger().info("正在注册监听器...");
-		Bukkit.getPluginManager().registerEvents(this, this);
-		//其他可选加载
-		if(configer.getBoolean("on_night", false)) {
-			getLogger().info("正在创建夜晚检测TASK...");
-			OnNightTask = new OnNightStart();
-		}
+		getLogger().info("加载触发器");
+		TriggerManager.enable();
 		getLogger().info("tideZombie加载完成");
 	}
 
@@ -45,20 +37,8 @@ public class Tz extends JavaPlugin implements Listener {
 		//关闭尸潮线程
 		if(TaskThread != null)
 			TaskThread.tzCancel();
-		//关闭夜晚定时线程
-		if(OnNightTask != null)
-			OnNightTask.cancel();
-	}
-	
-	static boolean firstPlayer = true;
-	//在这里初始化实例，因为在这里，所有世界都应该加载完毕
-	@EventHandler
-	public void CreatureSpawnEvent(PlayerJoinEvent e) {
-		//是否在第一个玩家进服时启动
-		if(TaskThread !=null && configer.getBoolean("on_enable", false) && firstPlayer) {
-			TaskThread = new DoMob(thisPlugin);
-			firstPlayer = false;
-		}
+		//关闭触发器
+		TriggerManager.disable();
 	}
 
 	@Override

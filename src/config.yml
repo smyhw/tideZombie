@@ -2,16 +2,6 @@
 enable_worlds:
 - world
 
-#是否在第一个玩家进服之后就开始尸潮？
-on_enable: true
-
-#是否在夜晚到来时开始尸潮(并在早上结束)
-#这相当与在14000ticks时开始一个持续10000tick的限时尸潮
-on_night: false
-
-#以哪个世界的时间为准来判定是否是夜晚
-on_night_world: world
-
 #最远刷怪半径(距离玩家)
 max_radius: 64
 
@@ -61,3 +51,25 @@ useCommands: false
 spawn_cmds:
 - "mm mobs spawn Messenger 1 %world%,%x%,%y%,%z%"
 - "player:summon Zombie %x% %y% %z%"
+
+#这些触发器可以让你更加灵活的开启尸潮
+triggers:
+  #在夜晚到来时开始尸潮(并在早上结束)
+  #这相当与在14000ticks时开始一个持续10000tick的限时尸潮
+  OnNightStartTrigger:
+    #是否启动这个触发器
+    enable: true
+    #以哪个世界的时间来
+    on_night_world: world
+
+  #每间隔一段时间，开启定时尸潮
+  IntervalTrigger:
+    enable: true
+    #间隔多长时间(单位:tick)
+    intervalTime: 12000
+    #持续时间(设置为-1则为持续性尸潮)
+    duration: 1200
+
+  #当第一个玩家进入服务器时，开启尸潮
+  OnFirstPlayerLoginTrigger:
+    enable: false
