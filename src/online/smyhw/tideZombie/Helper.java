@@ -6,7 +6,9 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandException;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -45,11 +47,11 @@ public class Helper {
 	 * @param loc 玩家坐标/中心坐标
 	 * @return 找到的
 	 */
-	public static Location getSpwanLoc(Location loc){
-		for(int num = 0; num <= Tz.configer.getInt("max_try_times", 15);num++){
+	public static Location getSpwanLoc(Location loc,ConfigurationSection configer){
+		for(int num = 0; num <= configer.getInt("max_try_times", 15);num++){
 			Location rloc = getRandomLoc(loc);
-			int maxY = rloc.getBlockY()+Tz.configer.getInt("max_Y_radius", 5);
-			for(int y = maxY-(Tz.configer.getInt("max_Y_radius", 5)*2)+2;y<=maxY;y++){
+			int maxY = rloc.getBlockY()+configer.getInt("max_Y_radius", 5);
+			for(int y = maxY-(configer.getInt("max_Y_radius", 5)*2)+2;y<=maxY;y++){
 				Location tmp1 = new Location(rloc.getWorld(),rloc.getBlockX(),y,rloc.getBlockZ());
 				//测试是否适合刷怪(必须是两格空气，脚底下不能是空气)
 				if(tmp1.getBlock().getType()!=Material.AIR) {continue;}
@@ -69,12 +71,13 @@ public class Helper {
 	 * @param loc 坐标
 	 * @return 如果是 原生 生成，则返回生成的怪物实例，如果是指令生成或者生成失败，则返回null
 	 */
-	public static Creature spawnMob(Location loc,Player player){
+	public static Creature spawnMob(Location loc,Player player,String tideID){
+		ConfigurationSection configer = Helper.getCfgById(tideID);
 		Random rNum = new Random();
-		if(Tz.configer.getBoolean("useCommands",false)){//使用指令生成怪物
-			List<String> cmdList = Tz.configer.getStringList("spawn_cmds");
+		if(configer.getBoolean("useCommands",false)){//使用指令生成怪物
+			List<String> cmdList = configer.getStringList("spawn_cmds");
 			if(cmdList.size()==0) {//异常反馈
-				Tz.loger.warning("你选择了使用指令生成怪物(useCommands=true),但是配置文件中没有找到指令列表(spawn_cmds),请检查配置文件！");
+				Tz.loger.warning("你选择了使用指令生成怪物(useCommands=true),但是配置文件中没有找到指令列表(spawn_cmds),请检查配置文件！(尸潮ID<"+tideID+">)");
 				return null;
 			}
 			int list_rNum = rNum.nextInt(cmdList.size());
@@ -100,9 +103,9 @@ public class Helper {
 				Tz.loger.warning("执行刷怪指令<"+cmd+">时出现错误");
 			}
 		}else{
-			List<String> MobList = Tz.configer.getStringList("enable_mob");
+			List<String> MobList = configer.getStringList("enable_mob");
 			if(MobList.size()==0) {//异常反馈
-				Tz.loger.warning("配置文件中没有找到怪物列表(enable_mob),请检查配置文件！");
+				Tz.loger.warning("配置文件中没有找到怪物列表(enable_mob),请检查配置文件！(尸潮ID<"+tideID+">)");
 				return null;
 			}
 			int list_rNum = rNum.nextInt(MobList.size());
@@ -119,4 +122,22 @@ public class Helper {
 		}
 		return null;
 	}
+	
+	/**
+	 * 向给定世界中的所有玩家发送一条信息
+	 * @param word_list 给定的世界列表
+	 * @param msg 要发送的信息
+	 */
+	public static void broadcastMessageToWorld(List<World> word_list,String msg) {
+		for(World world : word_list) {
+			for(Player p : world.getPlayers()) {
+				p.sendMessage(msg);
+			}
+		}
+	}
+	
+	public static ConfigurationSection getCfgById(String tideID) {
+		return Tz.configer.getConfigurationSection("tides."+tideID);
+	}
+	
 }

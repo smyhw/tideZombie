@@ -10,8 +10,8 @@ import online.smyhw.tideZombie.Tz;
 
 public class OnNightStartTrigger implements StandardTrigger{
 	static OnNightStartTriggerTask  task;
-	public OnNightStartTrigger() {
-		task = new OnNightStartTriggerTask();
+	public OnNightStartTrigger(String triggerID) {
+		task = new OnNightStartTriggerTask(triggerID);
 	}
 	
 	public void disable() {
@@ -25,7 +25,9 @@ public class OnNightStartTrigger implements StandardTrigger{
  * @author smyhw
  */
 class OnNightStartTriggerTask extends BukkitRunnable {
-	public OnNightStartTriggerTask() {
+	String triggerID;
+	public OnNightStartTriggerTask(String triggerID) {
+		this.triggerID = triggerID;
 		this.runTaskTimer(Tz.thisPlugin, 0, 20);
 	}
 
@@ -41,10 +43,8 @@ class OnNightStartTriggerTask extends BukkitRunnable {
 			time = time%24000;
 		}
 		if(time>14000 && time< 14030){
-			//如果没有开启强制覆盖，并且已经有尸潮在运行，则不创建新的尸潮
-			if(Tz.configer.getBoolean("triggers.OnNightStartTrigger.force", false) &&  Tz.TaskThread!=null ) {return;}
 			Tz.loger.info("夜晚自动开启尸潮");
-			new DoMob(Tz.thisPlugin,10000);
+			new DoMob(Tz.thisPlugin,Tz.configer.getString("triggers."+triggerID+".targetTide"),"触发器<"+triggerID+">");
 		}
 		
 	}

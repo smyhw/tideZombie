@@ -7,10 +7,12 @@ import online.smyhw.tideZombie.Tz;
 
 public class IntervalTrigger implements StandardTrigger {
 	IntervalTriggerTask task;
-	public IntervalTrigger() {
-		int interval = Tz.configer.getInt("triggers.IntervalTrigger.intervalTime",12000);
-		int duration = Tz.configer.getInt("triggers.IntervalTrigger.duration",1200);
-		task = new IntervalTriggerTask(interval,duration);
+	public final String ID;
+	public IntervalTrigger(String triggerID) {
+		this.ID = triggerID;
+		//持续时间
+		int interval = Tz.configer.getInt("triggers."+ID+".intervalTime",12000);
+		task = new IntervalTriggerTask(interval,ID);
 	}
 	@Override
 	public void disable() {
@@ -20,18 +22,16 @@ public class IntervalTrigger implements StandardTrigger {
 }
 
 class IntervalTriggerTask extends BukkitRunnable{
-	int time;
+	String ID;
 	/**
 	 * @param interval 间隔时间
 	 * @param time 持续时间
 	 */
-	public IntervalTriggerTask(int interval,int time) {
-		this.time = time;
+	public IntervalTriggerTask(int interval,String ID) {
+		this.ID = ID;
 		this.runTaskTimer(Tz.thisPlugin, 0, interval);
 	}
 	public void run() {
-		if(Tz.TaskThread==null) {
-			new DoMob(Tz.thisPlugin,time);
-		}
+		new DoMob(Tz.thisPlugin,Tz.configer.getString("triggers."+ID+".targetTide"),"触发器<"+ID+">");
 	}
 }
