@@ -20,10 +20,10 @@ public class Helper {
 	 * @param iloc 中心坐标/玩家坐标
 	 * @return 返随机坐标
 	 */
-	public static Location getRandomLoc(Location iloc){
+	public static Location getRandomLoc(Location iloc,ConfigurationSection configer){
 		Location loc = iloc.clone();
-		int mr = Tz.configer.getInt("max_radius", 32);
-		int ir = Tz.configer.getInt("min_radius", 9);
+		int mr = configer.getInt("max_radius", 32);
+		int ir = configer.getInt("min_radius", 9);
 		int ramNumX = (int) ((mr-ir)*Math.random());
 		int ramNumZ = (int) ((mr-ir)*Math.random());
 		ramNumX = ramNumX+ir;
@@ -41,30 +41,7 @@ public class Helper {
 		return loc;
 	}
 	
-	/**
-	 * 根据玩家坐标，获取一个实际可以刷怪的坐标<br>
-	 * 如果找不到，则返回null
-	 * @param loc 玩家坐标/中心坐标
-	 * @return 找到的
-	 */
-	public static Location getSpwanLoc(Location loc,ConfigurationSection configer){
-		for(int num = 0; num <= configer.getInt("max_try_times", 15);num++){
-			Location rloc = getRandomLoc(loc);
-			int maxY = rloc.getBlockY()+configer.getInt("max_Y_radius", 5);
-			for(int y = maxY-(configer.getInt("max_Y_radius", 5)*2)+2;y<=maxY;y++){
-				Location tmp1 = new Location(rloc.getWorld(),rloc.getBlockX(),y,rloc.getBlockZ());
-				//测试是否适合刷怪(必须是两格空气，脚底下不能是空气)
-				if(tmp1.getBlock().getType()!=Material.AIR) {continue;}
-				tmp1.setY(y-1);
-				if(tmp1.getBlock().getType()!=Material.AIR) {continue;}
-				tmp1.setY(y-2);
-				if(tmp1.getBlock().getType()==Material.AIR) {continue;}
-				tmp1.setY(y-1);
-				return tmp1;
-			}
-		}
-		return null;
-	}
+
 	
 	/**
 	 * 在给定的坐标上进行怪物生成操作

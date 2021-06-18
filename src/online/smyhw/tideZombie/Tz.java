@@ -56,7 +56,7 @@ public class Tz extends JavaPlugin implements Listener {
 			return true;
 		}
 		if(args.length == 0) {
-			sender.sendMessage("§b[§ctideZombie§b]§r:参数错误，用法:tz start <尸潮ID> (这里指配置文件中的尸潮ID)");
+			sender.sendMessage("§b[§ctideZombie§b]§r:缺少参数，帮助: tz help");
 			return true;
 		}
 		switch(args[0]) {
@@ -93,11 +93,11 @@ public class Tz extends JavaPlugin implements Listener {
 			case "list":
 				sender.sendMessage("§b[§ctideZombie§b]§r:目前有<"+TaskThreads.size()+">个尸潮正在运行");
 				for(int num = 0 ; num < TaskThreads.size() ; num++) {
-					String world_list = "";
-					for (World world:TaskThreads.get(num).WorldList) {
-						world_list = world_list+world.getName()+",";
-					}
-					sender.sendMessage("§b[§ctideZombie§b]§r:["+num+"]尸潮类型<"+TaskThreads.get(num).tideID+"> | 触发来源<"+TaskThreads.get(num).reason+"> | 触发世界<"+world_list+">");
+//					String world_list = "";
+//					for (World world:TaskThreads.get(num).WorldList) {
+//						world_list = world_list+world.getName()+",";
+//					}
+					sender.sendMessage("§b[§ctideZombie§b]§r:["+num+"]尸潮类型<"+TaskThreads.get(num).tideID+"> | 触发来源<"+TaskThreads.get(num).reason+"> | 持续时间<"+TaskThreads.get(num).configer.getInt("duration",-1)+"> ");
 				}
 				return true;
 			case "reload":

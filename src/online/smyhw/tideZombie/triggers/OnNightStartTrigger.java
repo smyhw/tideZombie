@@ -25,9 +25,12 @@ public class OnNightStartTrigger implements StandardTrigger{
  * @author smyhw
  */
 class OnNightStartTriggerTask extends BukkitRunnable {
+	int Tinterval;//多少次夜晚过后触发一次尸潮
+	int interval = 0;//目前经过了多少个夜晚
 	String triggerID;
 	public OnNightStartTriggerTask(String triggerID) {
 		this.triggerID = triggerID;
+		this.Tinterval = Tz.configer.getInt("triggers."+triggerID+".interval",0);
 		this.runTaskTimer(Tz.thisPlugin, 0, 20);
 	}
 
@@ -44,7 +47,12 @@ class OnNightStartTriggerTask extends BukkitRunnable {
 		}
 		if(time>14000 && time<= 14020){
 			Tz.loger.info("夜晚自动开启尸潮");
-			new DoMob(Tz.thisPlugin,Tz.configer.getString("triggers."+triggerID+".targetTide"),"触发器<"+triggerID+">");
+			if(this.interval==this.Tinterval) {
+				new DoMob(Tz.thisPlugin,Tz.configer.getString("triggers."+triggerID+".targetTide"),"触发器<"+triggerID+">");
+				this.interval =  0;
+			}else {
+				this.interval = this.interval+1;	
+			}
 		}
 		
 	}

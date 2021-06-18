@@ -11,20 +11,16 @@
 #
 #该版本仍然处于beta中，非常可能出现bug，欢迎在发布帖下留言回报你发现的问题！
 
-
 #尸潮设设置
 #你需要在这里自定义你的尸潮
 #然后在triggers节点中配置何时启动这些尸潮
 tides:
   #这是尸潮的ID，你可以随意设置，玩家不会看到这个ID
   #这个示例配置拥有所有可用的配置项目
+  #实际使用时，你不需要配置所有的项目，你不配置的项目将自动使用默认值
   t1:
-    #这个尸潮在哪些世界刷怪
-    enable_worlds:
-    - world
-
     #尸潮持续时间
-    #设置为-1关闭它
+    #设置为-1关闭它(即不会自动停止)
     duration: 1200
 
     #该尸潮开启时广播给玩家的消息
@@ -32,6 +28,16 @@ tides:
 
     #该尸潮结束时广播给玩家的消息
     end_message: "§b[§ctideZombie§b]§r:尸潮已经停止..."
+
+    ##刷怪坐标生成设置
+
+    #刷怪坐标生成方式
+    #这是为将来的功能所准备的,不要修改它！
+    generate_loc_type: "around_player"
+
+    #这个尸潮在哪些世界刷怪
+    enable_worlds:
+    - world
 
     #最远刷怪半径(距离玩家)
     max_radius: 64
@@ -42,13 +48,13 @@ tides:
     #刷怪高度半径(距离玩家)
     max_Y_radius: 5
 
-    #多少ticks刷一次怪(每玩家刷一只)
-    spawn_ticks: 200
-
     #最高刷怪亮度
     #调低这个值来显著减少刷怪量
     max_light: 999
 
+    #多少ticks刷一次怪(每玩家刷一只)
+    spawn_ticks: 200
+    
     #最高尝试次数
     #最多尝试寻找多少次刷怪位置
     #当你的玩家把他刷怪半径中的所有方块全部填实的时候,
@@ -56,29 +62,91 @@ tides:
     max_try_times: 15
 
     #是否限制玩家周围的怪物数量
-    #1.12以下请关闭此项
+    #1.12以下请关闭此项(否则会报错)
     limit_mobs: true
 
     #如果限制玩家周围的怪物数量，那么:
     #每个玩家的最大刷怪半径中最多存在多少只怪
     max_mob_per_player: 15
 
+    #不能刷怪的方块
+    #怪物将不会在下列方块上生成
+    disable_blocks:
+    - AIR
+    - STATIONARY_WATER #静态水方块
+
+    #ID黑白名单设置
+    id_list_setting:
+        #值为1时,ID白名单(white_list_permissions)生效,
+        #值为2时,ID黑名单(black_list_permissions)生效，
+        #值位0时,ID黑白名单全部失效
+        enable: 0
+
+        #白名单_玩家ID
+        #不会以这些玩家为中心刷怪
+        white_list_player_id:
+        - smyhw
+        - testplayer1
+    
+        #黑名单_玩家ID
+        #只会以这些玩家为中心刷怪
+        black_list_player_id:
+        - smyhw
+        - testplayer1
+
+    #权限黑白名单设置
+    permissions_list_setting:
+        #值为1时,权限白名单(white_list_permissions)生效,
+        #值为2时,权限黑名单(black_list_permissions)生效，
+        #值位0时,权限黑白名单全部失效
+        enable: 0
+
+        #白名单_权限
+        #仅在permissions_list_switch为1时生效
+        #不会以拥有以下权限的玩家为中心刷怪
+        white_list_permissions:
+        - test.ps
+    
+        #黑名单_权限
+        #仅在permissions_list_switch为2时生效
+        #仅以拥有下列权限的玩家为中心刷怪
+        black_list_permissions:
+        - test.sps
+    
+    #刷怪区域
+    #只会以选中区域内的玩家为_中心_刷怪
+    #(贴士:实际可能刷怪的范围还得算上你的刷怪半径哦)
+    #这是一个列表，便于指定多个区域
+    #留空(即删掉该项目)以禁用它
+    #格式[x范围]&[y范围]&[z范围]
+    #注意:不能有空格
+    #例如: "100~200&64~100&200~300"
+    #     代表x轴100到200之间,y轴64~100之间,z轴200~300之间,在这个空间内的玩家的周围会刷怪
+    #删掉该配置项可以禁用它
+    area_list:
+    - "100~200&64~100&200~300"
+
+    ##怪物生成设置
+
+    #这个尸潮如何生成怪物?
+    #这个值为"cmd"时,使用指令(即下文spawn_cmds项目)生成怪物
+    #    这个生成方式可以使用例如mm的刷怪指令
+    #这个值为"def"时,直接生成(使用下文enable_mob项目规定的类型)
+    #    这个刷怪方式将被其他插件认作自然刷怪,可以兼容例如精英怪之类的自然刷怪增强插件
+    summon_mob_type: "def"
+
     #刷怪的列表
     #每种怪物将随机生成
     enable_mob:
     - ZOMBIE
 
-    #使用指令刷怪来替代原生刷怪
-    #适用于和其他插件/mob的刷怪联动
-    useCommands: false
-
-    #如果上面"useCommands"为true的话，那么这是生成怪物所用的指令列表
+    #如果上面"summon_mob_type"为cmd的话，那么这是生成怪物所用的指令列表
     #同样，每个指令将随机执行
     #P.S.这里也可以干一点骚操作,
-    #比如"setblock %x% %y% %z% touch"
+    #比如"setblock %x% %y% %z% touch"(在玩家周围随机放置火把)
     #%x%/%y%/%z%三个变量可用，替换为刷怪的坐标
     #%world%将被替换为世界名称
-    #"player:"开头将给予被刷怪玩家临时的op权限并执行该刷怪指令，适用于不提供world选项，直接使用指令执行人所在的世界的刷怪命令
+    #"player:"开头将给予当前世界的一个随机玩家临时的op权限并执行该刷怪指令，适用于不提供world选项，直接使用指令执行人所在的世界的刷怪命令
     spawn_cmds:
     - "mm mobs spawn Messenger 1 %world%,%x%,%y%,%z%"
     - "player:summon Zombie %x% %y% %z%"
@@ -108,6 +176,8 @@ triggers:
     #需要触发的尸潮ID
     #这必须是你在上文tides中定义过的ID
     targetTide: "t1"
+    #间隔，每次尸潮间间隔多少天(默认0天,即每天晚上都有尸潮)
+    interval: 0
 
   tt2:
     #每间隔一段时间，开启尸潮
@@ -123,3 +193,20 @@ triggers:
     #适用于开启全天候的尸潮，开服启动，关服结束
     triggerType: "OnFirstPlayerLoginTrigger"
     targetTide: "t1"
+  tt4:
+    #概率触发器
+    #每个周期都有概率开启尸潮
+    #如果没有开启，则会累加概率
+    #比如，第一天有10%的概率触发尸潮,如果没有触发,则第二天会有20%的概率触发尸潮
+    
+    #周期时间
+    #可以填写"10000tk"代表每10000ticks为一个周期进行判定
+    #也可以填写"2dn"代表周期是2天,这会在每二天傍晚进行判定(适合每天晚上递增概率触发尸潮)
+    probability: "1dn"
+    #如果上面一项你填写的是以天为周期判断，那么以哪个世界的时间为准
+    on_night_world: world
+    #每次增加多少概率?（单位是百分比）
+    accumulation: 10
+    targetTide: "t1"
+    triggerType: "ProbabilityAccumulation"
+    
