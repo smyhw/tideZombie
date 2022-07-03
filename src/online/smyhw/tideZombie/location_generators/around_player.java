@@ -195,7 +195,6 @@ public class around_player implements StandardGenerator {
 				String[] tmp5 = tmp1[2].split("~");
 				if(tmp5.length!=2){Tz.loger.warning("尸潮<"+tide.tideID+">的Z轴坐标范围<"+line+">格式错误,不能识别");continue;}
 				try {tmp6=Integer.parseInt(tmp5[0]);tmp7=Integer.parseInt(tmp5[1]);}catch(NumberFormatException  e) {Tz.loger.warning("尸潮<"+tide.tideID+">的Z轴坐标范围<"+line+">数字格式错误,不能识别");continue;}
-				System.out.println(tmp6+">"+tmp7);
 				if(tmp6>tmp7) {
 					tmp2.put("Z_max", tmp6);
 					tmp2.put("Z_min", tmp7);
@@ -205,7 +204,6 @@ public class around_player implements StandardGenerator {
 				}
 				area_list.add(tmp2);
 			}
-			System.out.println(area_list.toString());
 		}
 		
 		Helper.broadcastMessageToWorld(WorldList,configer.getString("start_message", "§b[§ctideZombie§b]§r:尸潮已经开始..."));

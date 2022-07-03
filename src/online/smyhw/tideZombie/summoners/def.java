@@ -31,11 +31,7 @@ public class def implements StandardSummoner {
 			}
 			//生成怪物
 			Entity e = loc.getWorld().spawnEntity(loc, et);
-			//如果怪物周围32格内有玩家，锁定第一个玩家
-			Iterator<Player> ir = loc.getNearbyPlayers(32).iterator();
-			if(ir.hasNext()) {
-				((Creature) e).setTarget(ir.next());
-			}
+			//TODO 将怪物的目标锁定为最近的玩家
 			return true;
 		}
 		return true;
