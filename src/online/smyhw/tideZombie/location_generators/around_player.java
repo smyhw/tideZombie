@@ -126,6 +126,7 @@ public class around_player implements StandardGenerator {
 	@Override
 	public boolean init(DoMob tide,ConfigurationSection configer) {
 		this.configer = configer;
+		this.configer.addDefault("area_list",new ArrayList<>());
 		this.summon_ticks = configer.getInt("spawn_ticks", 200);
 		
 		//检测世界是否存在
