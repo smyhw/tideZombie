@@ -67,7 +67,7 @@ public class around_player implements StandardGenerator {
 					}
 				}
 				//如果达到了最大刷怪量，不继续刷怪
-				if(configer.getBoolean("limit_mobs", false) && p.getLocation().getNearbyEntitiesByType(Monster.class, configer.getInt("max_radius", 64), configer.getInt("max_Y_radius", 5)).size() >= configer.getInt("max_mob_per_player", 15)) {
+				if(configer.getBoolean("limit_mobs", false) && p.getLocation().getWorld().getEntitiesByClass(Monster.class).size() >= (configer.getInt("max_mob_per_player", 15)*p.getLocation().getWorld().getPlayers().size())) {
 					continue;
 				}
 				//寻找刷怪位置
