@@ -62,7 +62,7 @@ public class Tz extends JavaPlugin implements Listener {
 		switch(args[0]) {
 			case "start":
 				if(args.length != 2) { //参数不对
-					sender.sendMessage("§b[§ctideZombie§b]§r:参数错误，用法:tz start <尸潮ID> (这里指配置文件中的尸潮ID)");
+					sender.sendMessage("§b[§ctideZombie§b]§r:参数错误，用法:tz start <尸潮ID>");
 				} else {
 					if(!Tz.configer.contains("tides."+args[1])) {
 						sender.sendMessage("§b[§ctideZombie§b]§r:尸潮ID<"+args[1]+">不存在");
@@ -73,18 +73,18 @@ public class Tz extends JavaPlugin implements Listener {
 				return true;
 			case "stop":
 				if(args.length != 2) { //参数不对
-					sender.sendMessage("§b[§ctideZombie§b]§r:参数错误，用法:tz stop <尸潮ID> (这里指tz list中的尸潮ID)");
+					sender.sendMessage("§b[§ctideZombie§b]§r:参数错误，用法:tz stop <实例ID> (/tz list中列出的ID)");
 					return true;
 				}
 				int id;
 				try {
 					id = Integer.parseInt(args[1]);
 				} catch(NumberFormatException e) {
-					sender.sendMessage("§b[§ctideZombie§b]§r:无法解析你输入的尸潮ID");
+					sender.sendMessage("§b[§ctideZombie§b]§r:无法解析你输入的实例ID");
 					return true;
 				}
 				if(TaskThreads.size()<id) {
-					sender.sendMessage("§b[§ctideZombie§b]§r:你输入的尸潮ID不存在...");
+					sender.sendMessage("§b[§ctideZombie§b]§r:你输入的实例ID不存在...");
 					return true;
 				}
 				sender.sendMessage("§b[§ctideZombie§b]§r:停止尸潮<"+id+">...");
@@ -115,7 +115,7 @@ public class Tz extends JavaPlugin implements Listener {
 				return true;
 			case "help":
 			default:
-				sender.sendMessage("§b[§ctideZombie§b]§r:命令帮助§r\n" + "/tz start <ID>(这里指配置文件中的尸潮ID) §7§o#开始尸潮§r\n" + "/tz list §7§o#列出当前正在运行的所有尸潮§r\n" + "/tz stop <尸潮ID>(这里指tz list中的尸潮ID) §7§o#结束指定当前尸潮§r\n" + "/tz reload §7§o#重载配置文件§r");
+				sender.sendMessage("§b[§ctideZombie§b]§r:命令帮助§r\n" + "/tz start <尸潮ID> §7§o#开始尸潮§r\n" + "/tz list §7§o#列出当前正在运行的所有尸潮§r\n" + "/tz stop <实例ID>((/tz list中列出的ID)) §7§o#结束指定当前尸潮§r\n" + "/tz reload §7§o#重载配置文件§r");
 				return true;
 		}
 	}
