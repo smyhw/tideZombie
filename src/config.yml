@@ -43,7 +43,7 @@ tides:
     max_radius: 64
 
     #最近刷怪半径(距离玩家)
-    min_radius: 9
+    min_radius: 6
 
     #刷怪高度半径(距离玩家)
     max_Y_radius: 5
@@ -53,7 +53,7 @@ tides:
     max_light: 999
 
     #多少ticks刷一次怪(每玩家刷一只)
-    spawn_ticks: 200
+    spawn_ticks: 100
     
     #最高尝试次数
     #最多尝试寻找多少次刷怪位置
@@ -66,7 +66,7 @@ tides:
 
     #如果限制玩家周围的怪物数量，那么:
     #每个玩家的刷怪上限
-    max_mob_per_player: 15
+    max_mob_per_player: 50
 
     #不能刷怪的方块
     #怪物将不会在下列方块上生成
