@@ -22,6 +22,10 @@ minecraft bukkit plugin
 
 ***
 
+### 从1.x升级
+> 注意，1.x和2.x版本的配置文件改动有亿点大，互不兼容！
+***
+
 ### 权限
 
 有且只有一条`tideZombie.admin`,可以执行本插件所有指令
