@@ -1,6 +1,6 @@
 name: tideZombie
 main: online.smyhw.tideZombie.Tz
-version: 2.0.1
+version: 2.0.2
 author: smyhw
 commands:
   tz:

@@ -31,6 +31,7 @@ public class Tz extends JavaPlugin {
         configer = getConfig();
         thisPlugin = this;
         tides = new ConcurrentHashMap<String, SingleTide>();
+        Metrics metrics = new Metrics(this, 28946);
         getLogger().info("正在加载配置...");
         saveDefaultConfig();
         debug = getConfig().getBoolean("debug", false);
