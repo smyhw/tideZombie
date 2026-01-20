@@ -1,0 +1,28 @@
+# 是否启用这个尸潮
+# 若为false，则这个配置文件不会被加载！
+enable: true
+
+# 尸潮持续时间
+# 设置为-1关闭它(即不会自动停止)
+duration: 1200
+
+# 这个尸潮在哪些世界刷怪
+enable_worlds:
+- world
+
+# 刷怪的列表
+enable_mob:
+- ZOMBIE
+- SKELETON
+- CREEPER
+
+# 触发器设置，这里定义了这个尸潮该何时启动
+trigger:
+  # 在夜间开启这个尸潮
+  type: "OnNightStartTrigger"
+  
+  # 以哪个世界的时间为准
+  on_night_world: world
+
+  # 间隔，每次尸潮间间隔多少天(默认0天,即每天晚上都有尸潮)
+  interval: 0

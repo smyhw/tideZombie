@@ -6,15 +6,15 @@ import online.smyhw.tideZombie.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class around_player implements StandardGenerator {
+public class around_player_old implements StandardGenerator {
     ConfigurationSection configer;
     List<World> WorldList = new ArrayList<World>();
     int summon_ticks;
@@ -24,142 +24,52 @@ public class around_player implements StandardGenerator {
     List<String> wbl_pms;
     List<HashMap<String, Integer>> area_list = new ArrayList<HashMap<String, Integer>>();
 
-    public around_player() {
+    public around_player_old() {
     }
 
     /**
      * 根据玩家坐标，获取一个实际可以刷怪的坐标<br>
+     * 如果找不到，则返回null
      *
      * @param loc 玩家坐标/中心坐标
-     * @return 找到的刷怪位置，如果找不到返回null
+     * @return 找到的
      */
     public static Location getSpwanLoc(Location loc, ConfigurationSection configer) {
-        Utils.debug("尝试获取刷怪位置...");
-        // 预缓存配置值
-        final int maxTryTimes = configer.getInt("max_try_times", 15);
-        final int maxYRadius = configer.getInt("max_Y_radius", 5);
-        final int maxRadius = configer.getInt("max_radius", 32);
-        final int minRadius = configer.getInt("min_radius", 9);
-
-        // 使用HashSet进行O(1)查找，替代List的O(n)遍历
-        List<String> disableBlocksList = configer.getStringList("disable_blocks");
-        Set<Material> disabledMaterials = new HashSet<>();
-        if (disableBlocksList.isEmpty()) {
-            disabledMaterials.add(Material.AIR);
-            disabledMaterials.add(Material.getMaterial("STATIONARY_WATER"));
-        } else {
-            for (String blockName : disableBlocksList) {
-                Material mat = Material.getMaterial(blockName);
-                if (mat != null) {
-                    disabledMaterials.add(mat);
+        List<String> disable_blocks = configer.getStringList("disable_blocks");
+        if (disable_blocks.isEmpty()) {
+            disable_blocks.add("AIR");
+            disable_blocks.add("STATIONARY_WATER");
+        }
+        for (int num = 0; num <= configer.getInt("max_try_times", 15); num++) {
+            Location rloc = Utils.getRandomLoc(loc, configer);
+            int maxY = rloc.getBlockY() + configer.getInt("max_Y_radius", 5);
+            for (int y = maxY - (configer.getInt("max_Y_radius", 5) * 2) + 2; y <= maxY; y++) {
+                Location tmp1 = new Location(rloc.getWorld(), rloc.getBlockX(), y, rloc.getBlockZ());
+                //测试是否适合刷怪(必须是两格空气，脚底下不能是黑名单方块)
+                if (tmp1.getBlock().getType() != Material.AIR) {
+                    continue;
                 }
-            }
-        }
-
-        World world = loc.getWorld();
-        if (world == null) {
-            Utils.debug("刷怪世界不存在！" + world.getName());
-            return null;
-        }
-
-        int baseX = loc.getBlockX();
-        int baseY = loc.getBlockY();
-        int baseZ = loc.getBlockZ();
-
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-
-        for (int attempt = 0; attempt <= maxTryTimes; attempt++) {
-            // 随机坐标生成
-            int offsetX = random.nextInt(minRadius, maxRadius + 1);
-            int offsetZ = random.nextInt(minRadius, maxRadius + 1);
-            if (random.nextBoolean()) offsetX = -offsetX;
-            if (random.nextBoolean()) offsetZ = -offsetZ;
-
-            int targetX = baseX + offsetX;
-            int targetZ = baseZ + offsetZ;
-
-            Utils.debug("随机坐标 -> " + targetX + "," + targetZ);
-
-            // 计算Y轴搜索范围
-            int minY = Math.max(1, baseY - maxYRadius);
-            int maxY = Math.min(world.getMaxHeight() - 2, baseY + maxYRadius);
-
-            // 使用螺旋式搜索：从中心向两端交替搜索，更可能快速找到合适位置
-            Location result = findSpawnableY(world, targetX, targetZ, baseY, minY, maxY, disabledMaterials);
-            if (result != null) {
-                return result;
+                tmp1.setY(y - 1);
+                if (tmp1.getBlock().getType() != Material.AIR) {
+                    continue;
+                }
+                tmp1.setY(y - 2);
+//				if(tmp1.getBlock().getType()==Material.AIR) {continue;}
+                boolean block_disabled = false;
+                for (String block_name : configer.getStringList("disable_blocks")) {
+                    if (tmp1.getBlock().getType() == Material.getMaterial(block_name)) {
+                        block_disabled = true;
+                        break;
+                    }
+                }
+                if (block_disabled) {
+                    continue;
+                }
+                tmp1.setY(y - 1);
+                return tmp1;
             }
         }
         return null;
-    }
-
-    /**
-     * 在指定X,Z坐标的垂直范围内寻找可刷怪的Y坐标
-     * =中心Y向上下交替扩展，优先找到离玩家Y坐标最近的位置
-     *
-     * @param world             世界
-     * @param x                 X坐标
-     * @param z                 Z坐标
-     * @param centerY           中心Y坐标（玩家Y坐标）
-     * @param minY              最小Y坐标
-     * @param maxY              最大Y坐标
-     * @param disabledMaterials 禁止刷怪的方块类型集合
-     * @return 找到的刷怪位置，找不到返回null
-     */
-    private static Location findSpawnableY(World world, int x, int z, int centerY, int minY, int maxY, Set<Material> disabledMaterials) {
-        // 交替向上下搜索
-        int up = centerY;
-        int down = centerY - 1;
-
-        while (up <= maxY || down >= minY) {
-            // 向上搜索
-            if (up <= maxY) {
-                Location result = checkSpawnLocation(world, x, up, z, disabledMaterials);
-                if (result != null) return result;
-                up++;
-            }
-            // 向下搜索
-            if (down >= minY) {
-                Location result = checkSpawnLocation(world, x, down, z, disabledMaterials);
-                if (result != null) return result;
-                down--;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 检查指定坐标是否适合刷怪
-     * 条件：该位置和上方一格都是空气，脚下方块不在禁止列表中
-     *
-     * @param world             世界
-     * @param x                 X坐标
-     * @param y                 Y坐标（实体脚部位置）
-     * @param z                 Z坐标
-     * @param disabledMaterials 禁止刷怪的方块类型集合
-     * @return 如果适合刷怪返回Location，否则返回null
-     */
-    private static Location checkSpawnLocation(World world, int x, int y, int z, Set<Material> disabledMaterials) {
-        // 检查脚部位置是否为空气
-        Block feetBlock = world.getBlockAt(x, y, z);
-        if (feetBlock.getType() != Material.AIR) {
-            return null;
-        }
-
-        // 检查头部位置是否为空气
-        Block headBlock = world.getBlockAt(x, y + 1, z);
-        if (headBlock.getType() != Material.AIR) {
-            return null;
-        }
-
-        // 检查脚下方块是否在禁止列表中
-        Block groundBlock = world.getBlockAt(x, y - 1, z);
-        if (disabledMaterials.contains(groundBlock.getType())) {
-            return null;
-        }
-
-        // 找到合适位置
-        return new Location(world, x + 0.5, y, z + 0.5);
     }
 
     @Override
@@ -172,16 +82,13 @@ public class around_player implements StandardGenerator {
         } else {
             now_summon_ticks = 0;
         }
-        Utils.debug("尝试刷怪...");
         for (World wd : WorldList) {
-            Utils.debug("目标世界 -》" + wd.getName());
             continueNextPlayer:
             for (Player p : wd.getPlayers()) {
-                Utils.debug("目标玩家 -> " + p.getName());
                 //判断黑白名单
 
                 //ID黑白名单
-                if (configer.getInt("id_list_setting.enable", 0) == 0) {
+                if (configer.getInt("id_list_setting.enable") == 0) {
                 } else if (configer.getInt("id_list_setting.enable") == 1) {
                     if (wbl_id.contains(p.getName())) {
                         continue continueNextPlayer;
@@ -192,10 +99,8 @@ public class around_player implements StandardGenerator {
                     }
                 }
 
-                Utils.debug("ID黑白名单通过");
-
                 //权限黑白名单
-                if (configer.getInt("permissions_list_setting.enable", 0) == 0) {
+                if (configer.getInt("permissions_list_setting.enable") == 0) {
                 } else if (configer.getInt("permissions_list_setting.enable") == 1) {
                     for (String pp : wbl_pms) {
                         if (p.hasPermission(pp)) {
@@ -214,11 +119,8 @@ public class around_player implements StandardGenerator {
                         continue;
                     }
                 }
-
-                Utils.debug("权限黑白名单通过");
-
                 //坐标检测
-                if (!configer.getStringList("area_list").isEmpty()) {
+                if (configer.getStringList("area_list").size() != 0) {
                     boolean inAnyArea = false;
                     for (HashMap<String, Integer> line : area_list) {
                         if (p.getLocation().getBlockX() <= line.get("X_max") &&
@@ -235,32 +137,20 @@ public class around_player implements StandardGenerator {
                         continue continueNextPlayer;
                     }
                 }
-
-                Utils.debug("坐标检测通过");
-
                 //如果达到了最大刷怪量，不继续刷怪
                 if (configer.getBoolean("limit_mobs", false) && p.getLocation().getWorld().getEntitiesByClass(Monster.class).size() >= (configer.getInt("max_mob_per_player", 15) * p.getLocation().getWorld().getPlayers().size())) {
                     continue;
                 }
-
-                Utils.debug("最大刷怪量通过");
-
                 //寻找刷怪位置
                 Location spawnLoc = getSpwanLoc(p.getLocation(), configer);
                 //如果没有找到合适的刷怪位置，不刷怪
                 if (spawnLoc == null) {
                     continue;
                 }
-
-                Utils.debug("找到刷怪位置");
-
                 //亮度过高，不刷怪
                 if (spawnLoc.getBlock().getLightLevel() > configer.getInt("max_light", 999)) {
                     continue;
                 }
-
-                Utils.debug("亮度检测通过");
-
 //				Helper.spawnMob(spawnLoc,p,tideID);
                 //最终放入刷怪列表
                 fin.add(spawnLoc);
@@ -273,7 +163,7 @@ public class around_player implements StandardGenerator {
     public boolean init(DoMob tide, ConfigurationSection configer) {
         this.configer = configer;
         this.configer.addDefault("area_list", new ArrayList<>());
-        this.summon_ticks = configer.getInt("spawn_ticks", 100);
+        this.summon_ticks = configer.getInt("spawn_ticks", 200);
 
         //检测世界是否存在
         List<String> WorldNameStringList = configer.getStringList("enable_worlds");

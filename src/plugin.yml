@@ -1,8 +1,8 @@
 name: tideZombie
 main: online.smyhw.tideZombie.Tz
-version: 1.9.2
+version: 2.0.1
 author: smyhw
 commands:
   tz:
     description: 控制尸潮
-    usage: /<command> [start/stop] <time>
+    usage: /<command> [start/stop] <id>
