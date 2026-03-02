@@ -149,3 +149,22 @@ trigger:
 </details>
 
 ***
+
+## 编译
+这不是一个"现代化"的项目，它没有依赖管理和构建工具。（同时也没有外部依赖）  
+**可以使用eclipse的导出或是idea的工件等功能打包**  
+* 除了编译输出，还需要包含examples目录，plugin.yml和config.yml
+
+或者  
+
+**直接使用原生jdk工具打包**
+```
+dir /s /b src\*.java > srclist
+javac -encoding utf-8 -d dst -cp bukkit-1.7.10-R0.1-SNAPSHOT.jar -sourcepath src @srclist
+jar cf tideZombie.jar -C dst .
+jar uf ./tideZombie.jar examples
+jar uf ./../tideZombie.jar *.yml
+```
+jdk最低版本为1.8，最低sdk版本为bukkit-1.7.10-R0.1-SNAPSHOT.jar  
+即[https://github.com/Bukkit/Bukkit](https://github.com/Bukkit/Bukkit)仓库的源码  
+当然，理论上更高版本的jdk和sdk版本，包括spigot,paper都是可行的（最高测试到1.20.6）
